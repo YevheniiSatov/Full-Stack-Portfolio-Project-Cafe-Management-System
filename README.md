@@ -133,18 +133,51 @@ NOMINATIM_API_URL=https://nominatim.openstreetmap.org
 
 ---
 
-## Database Schema
-- **Users**:
-  - `id`, `email`, `password`, `role`, `name`
-- **Orders**:
-  - `id`, `client_email`, `status`, `latitude`, `longitude`
-- **Order Items**:
-  - `id`, `order_id`, `menu_item_id`, `quantity`
-- **Cafes**:
-  - `id`, `name`, `email`
-- **Menu Items**:
-  - `id`, `cafe_id`, `name`, `price`
+The database consists of the following tables:
 
+1. **`user`**:
+   - Stores user details such as email, password, role (Client, Cafe, Courier), etc.
+   - Fields:
+     - `id` (Primary Key)
+     - `email`, `name`, `password`, `role`
+
+2. **`cafe`**:
+   - Stores cafe-specific information.
+   - Fields:
+     - `id` (Primary Key)
+     - `email`, `name`
+     - `user_id` (Foreign Key referencing `user.id`)
+
+3. **`district`**:
+   - Contains district boundaries for geolocation lookups.
+   - Fields:
+     - `id` (Primary Key)
+     - `osm_id`, `name`, `boundary` (Geometry type)
+
+4. **`menu_item`**:
+   - Stores menu items offered by cafes.
+   - Fields:
+     - `id` (Primary Key)
+     - `name`, `price`
+     - `cafe_id` (Foreign Key referencing `cafe.id`)
+
+5. **`orders`**:
+   - Contains customer orders.
+   - Fields:
+     - `id` (Primary Key)
+     - `client_name`, `client_phone`, `address`, `latitude`, `longitude`
+     - `status` (Pending, Accepted, Delivered)
+     - `user_id` (Foreign Key referencing `user.id`)
+     - `courier_email`, `client_email`
+     - `assigned_courier`, `assigned_cafe`
+
+6. **`order_item`**:
+   - Represents items within an order.
+   - Fields:
+     - `id` (Primary Key)
+     - `quantity`
+     - `menu_item_id` (Foreign Key referencing `menu_item.id`)
+     - `order_id` (Foreign Key referencing `orders.id`)
 ---
 
 ## Contribution
